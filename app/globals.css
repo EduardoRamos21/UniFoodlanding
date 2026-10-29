@@ -1,0 +1,178 @@
+@import "tailwindcss";
+
+/* Tokens de DESIGN (1).md. La fuente display sustituye a PP Neue Corp Compact
+   (licencia comercial) con Archivo en anchura condensada. */
+@theme inline {
+  --color-ember: #fc5000;
+  --color-ember-press: #e04700;
+  --color-plasma: #524ae9;
+  --color-sulfur: #f5f28e;
+  --color-limestone: #f7f6f2;
+  --color-pumice: #e2e2df;
+  --color-obsidian: #070607;
+  --color-chalk: #ffffff;
+
+  --font-sans: var(--font-dm-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: var(--font-archivo), "Arial Narrow", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 40px;
+  --radius-medium: 20px;
+  --radius-small: 16px;
+  --radius-pill: 800px;
+
+  --container-page: 1280px;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@layer base {
+  html {
+    background: var(--color-pumice);
+    color: var(--color-obsidian);
+    scroll-behavior: auto;
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 6.5rem;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--color-sulfur);
+    color: var(--color-obsidian);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-plasma);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .page-container {
+    width: 100%;
+    max-width: var(--container-page);
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+  @media (min-width: 640px) {
+    .page-container {
+      padding-inline: 1.5rem;
+    }
+  }
+
+  .display {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-stretch: 72%;
+    letter-spacing: 0.012em;
+    line-height: 0.92;
+    text-wrap: balance;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-sulfur);
+    color: var(--color-obsidian);
+    padding: 0.3rem 0.75rem;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* Halftone estático: se ve si el canvas no llega a dibujarse. */
+  .halftone-fallback {
+    background-color: var(--color-plasma);
+    background-image:
+      radial-gradient(circle at center, var(--color-ember) 0 1.9px, transparent 2.3px),
+      radial-gradient(120% 90% at 0% 100%, var(--color-ember) 0 30%, transparent 62%),
+      radial-gradient(70% 70% at 100% 0%, var(--color-ember) 0 22%, transparent 60%);
+    background-size: 8px 8px, 100% 100%, 100% 100%;
+  }
+  [data-halftone-ready] .halftone-fallback,
+  .motion-pending .halftone-fallback {
+    background: transparent;
+  }
+
+  .ui-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: var(--radius-pill);
+    padding: 0.2rem 0.55rem;
+    font-size: 0.6875rem;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+}
+
+/* Divisor punteado de 1.5 px, firma del sistema. El color sale de border-color. */
+@utility dotted-x {
+  border-top-width: 1.5px;
+  border-top-style: dotted;
+}
+@utility dotted-y {
+  border-left-width: 1.5px;
+  border-left-style: dotted;
+}
+
+/* Estado inicial del hero mientras GSAP prepara la entrada. La clase la pone
+   un script en <head> y se retira sola si la animación no arranca. */
+.motion-pending [data-hero-item] {
+  opacity: 0;
+}
+
+/* Pestañas mejoradas con JS; sin JS se muestran todos los paneles. */
+.js [data-tab-panel][data-active="false"] {
+  display: none;
+}
+html:not(.js) [data-tab-only] {
+  display: none;
+}
+
+details[data-faq] summary::-webkit-details-marker {
+  display: none;
+}
+details[data-faq] summary {
+  list-style: none;
+}
+details[data-faq][open] [data-faq-icon] {
+  transform: rotate(45deg);
+}
+@supports (interpolate-size: allow-keywords) {
+  details[data-faq] {
+    interpolate-size: allow-keywords;
+  }
+  details[data-faq]::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition: block-size 0.35s var(--ease-out-soft), content-visibility 0.35s allow-discrete;
+  }
+  details[data-faq][open]::details-content {
+    block-size: auto;
+  }
+}
